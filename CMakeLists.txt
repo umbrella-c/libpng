@@ -75,7 +75,7 @@ if (LIBPNG_BUILD_SHARED)
     endif()
 
     add_library(png SHARED ${SHARED_SRCS})
-    add_dependencies(png zlib_dependency)
+    add_dependencies(png zlib)
     target_link_libraries(png zlib)
 
     if (WIN32 OR MOLLENOS)
