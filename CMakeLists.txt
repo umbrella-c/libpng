@@ -47,6 +47,7 @@ add_sources(
 )
 
 include_directories (
+    ${CMAKE_BINARY_DIR}
     ${zlib_SOURCE_DIR}/include
     include
 )
