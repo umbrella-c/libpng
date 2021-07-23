@@ -19,11 +19,7 @@ macro (add_sources)
 endmacro()
 
 # checkout dependencies that we need
-include(ExternalProject)
-
-set(ZLIB_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-set(ZLIB_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-set(ZLIB_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${ZLIB_INSTALL_DIR} -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
+include(FetchContent)
 
 FetchContent_Declare(
   zlib
@@ -51,7 +47,7 @@ add_sources(
 )
 
 include_directories (
-    ${ZLIB_INSTALL_DIR}/include
+    ${zlib_SOURCE_DIR}/include
     include
 )
 
