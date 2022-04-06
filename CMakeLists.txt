@@ -5,6 +5,8 @@ project (libpng C)
 option (LIBPNG_BUILD_STATIC "Build the static version of libpng" ON)
 option (LIBPNG_BUILD_SHARED "Build the shared library version of libpng" ON)
 
+find_package(ZLIB REQUIRED)
+
 set (SRCS "")
 
 macro (add_sources)
@@ -17,16 +19,6 @@ macro (add_sources)
         endif()
     endforeach()
 endmacro()
-
-# checkout dependencies that we need
-include(FetchContent)
-
-FetchContent_Declare(
-  zlib
-  GIT_REPOSITORY https://github.com/umbrella-c/zlib.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(zlib)
 
 add_sources(
     src/png.c
@@ -46,14 +38,10 @@ add_sources(
     src/pngwutil.c
 )
 
-include_directories (
-    ${CMAKE_BINARY_DIR}
-    ${zlib_SOURCE_DIR}/include
-    include
-)
-
 if (LIBPNG_BUILD_STATIC)
     add_library(png_static STATIC ${SRCS})
+    target_include_directories(png_static PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_include_directories(png_static PUBLIC include)
 
     install(TARGETS png_static
         ARCHIVE DESTINATION lib
@@ -72,8 +60,9 @@ if (LIBPNG_BUILD_SHARED)
     endif()
 
     add_library(png SHARED ${SHARED_SRCS})
-    add_dependencies(png zlib)
-    target_link_libraries(png zlib)
+    target_include_directories(png PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_include_directories(png PUBLIC include)
+    target_link_libraries(png ${ZLIB_LIBRARIES})
 
     if (WIN32 OR MOLLENOS)
         target_compile_definitions(png PUBLIC -DPNG_BUILD_DLL)

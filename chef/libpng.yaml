@@ -1,0 +1,47 @@
+# project information, packaging data
+project: 
+  name: The official PNG reference library
+  description: |
+    libpng is the official PNG reference library. It supports almost all PNG features, is extensible,
+    and has been extensively tested for over 23 years. The home site for development versions 
+    (i.e., may be buggy or subject to change or include experimental features) is https://libpng.sourceforge.io/, 
+    and the place to go for questions about the library is the png-mng-implement mailing list.
+  type: ingredient
+  author: Guy Eric Schalnat, Andreas Dilger, John Bowler, Glenn Randers-Pehrson, Cosmin Truta (current maintainer), and others
+  email: libpng@libpng.com
+  version: 1.6
+  license: http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+  homepage: https://libpng.sourceforge.io/
+
+ingredients:
+- name: vali/clang-cc
+  description: Use the clang cross-compiler to build the OS
+  channel: devel
+- name: vali/sdk-c
+  description: We need the C SDK to build the library for Vali
+  channel: devel
+  platform: vali
+- name: vali/zlib
+  description: Include zlib for libpng
+  channel: devel
+  platform: vali
+
+recipes:
+  - name: libpng
+    path: /
+    toolchain: vali/clang-cc
+    steps:
+    - type: generate
+      system: cmake
+      arguments:
+        - -G
+        - '"Unix Makefiles"'
+        - -DCMAKE_TOOLCHAIN_FILE=${{ PROJECT_PATH }}/chef/Vali.cmake
+        - -DZLIB_ROOT=${{ INGREDIENTS_PREFIX }}
+      env:
+        CROSS: ${{ TOOLCHAIN_PREFIX }}
+        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}/vali-sdk
+        VALI_DDK_PATH: ${{ INGREDIENTS_PREFIX }}/vali-ddk
+    - type: build
+      depends: [generate]
+      system: make
