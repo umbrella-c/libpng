@@ -7,20 +7,7 @@ option (LIBPNG_BUILD_SHARED "Build the shared library version of libpng" ON)
 
 find_package(ZLIB REQUIRED)
 
-set (SRCS "")
-
-macro (add_sources)
-    file (RELATIVE_PATH _relPath "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-    foreach (_src ${ARGN})
-        if (_relPath)
-            list (APPEND SRCS "${_relPath}/${_src}")
-        else()
-            list (APPEND SRCS "${_src}")
-        endif()
-    endforeach()
-endmacro()
-
-add_sources(
+set (SRCS 
     src/png.c
     src/pngerror.c
     src/pngget.c

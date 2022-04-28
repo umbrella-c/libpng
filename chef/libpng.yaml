@@ -13,36 +13,38 @@ project:
 
 ingredients:
 - name: vali/clang-cc
-  description: Use the clang cross-compiler to build the OS
   channel: devel
+  platform: host
+  arch: host
 - name: vali/sdk-c
-  description: Require the C SDK to build the library for Vali
   channel: devel
-  platform: vali
 - name: vali/zlib
-  description: Require zlib for libpng
   channel: devel
-  platform: vali
 
 recipes:
   - name: libpng
     path: /
     toolchain: vali/clang-cc
     steps:
-    - type: generate
+    - name: config
+      type: generate
       system: cmake
       arguments:
         - -G
         - '"Unix Makefiles"'
         - -DCMAKE_TOOLCHAIN_FILE=${{ PROJECT_PATH }}/chef/Vali.cmake
-        - -DZLIB_ROOT=${{ INGREDIENTS_PREFIX }}
       env:
         CROSS: ${{ TOOLCHAIN_PREFIX }}
-        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}/vali-sdk
-        VALI_DDK_PATH: ${{ INGREDIENTS_PREFIX }}/vali-ddk
-    - type: build
-      depends: [generate]
+        VALI_ARCH: ${{ CHEF_ARCHITECTURE }}
+        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}
+    - name: build
+      type: build
+      depends: [config]
       system: make
+      env:
+        CROSS: ${{ TOOLCHAIN_PREFIX }}
+        VALI_ARCH: ${{ CHEF_ARCHITECTURE }}
+        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}
 
 packs:
 - name: libpng
