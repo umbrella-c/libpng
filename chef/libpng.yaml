@@ -40,17 +40,18 @@ recipes:
         - -G
         - '"Unix Makefiles"'
         - -DCMAKE_TOOLCHAIN_FILE=$[[ PROJECT_PATH ]]/cmake/vali.cmake
+        - -DZLIB_ROOT=$[[ BUILD_INGREDIENTS_PREFIX ]]
       env:
         VALICC: $[[ TOOLCHAIN_PREFIX ]]/usr/local
         VALI_ARCH: $[[ CHEF_TARGET_ARCHITECTURE ]]
-        VALI_SDK_PATH: $[[ INGREDIENTS_PREFIX ]]
+        VALI_SDK_PATH: $[[ BUILD_INGREDIENTS_PREFIX ]]
     - name: build
       type: build
       depends: [config]
       system: make
       env:
         VALICC: $[[ TOOLCHAIN_PREFIX ]]/usr/local
-        VALI_SDK_PATH: $[[ INGREDIENTS_PREFIX ]]
+        VALI_SDK_PATH: $[[ BUILD_INGREDIENTS_PREFIX ]]
 
 packs:
 - name: libpng
