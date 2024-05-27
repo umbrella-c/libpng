@@ -11,20 +11,27 @@ project:
   license: http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
   homepage: https://libpng.sourceforge.io/
 
-ingredients:
-- name: vali/clang-cc
-  channel: devel
-  platform: host
-  arch: host
-- name: vali/sdk-c
-  channel: devel
-- name: vali/zlib
-  channel: devel
+platforms:
+  - name: vali
+    toolchain: vali/clang-cc=devel
+    architectures: [amd64, i386]
+
+environment:
+  host:
+    packages:
+      - cmake
+      - make
+  build:
+    ingredients:
+      - name: vali/sdk-c
+        channel: devel
+      - name: vali/zlib
+        channel: devel
 
 recipes:
   - name: libpng
     path: /
-    toolchain: vali/clang-cc
+    toolchain: platform
     steps:
     - name: config
       type: generate
@@ -32,17 +39,18 @@ recipes:
       arguments:
         - -G
         - '"Unix Makefiles"'
-        - -DCMAKE_TOOLCHAIN_FILE=${{ PROJECT_PATH }}/chef/Vali.cmake
+        - -DCMAKE_TOOLCHAIN_FILE=$[[ PROJECT_PATH ]]/cmake/vali.cmake
       env:
-        CROSS: ${{ TOOLCHAIN_PREFIX }}/usr/local
-        VALI_ARCH: ${{ CHEF_TARGET_ARCHITECTURE }}
-        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}
+        VALICC: $[[ TOOLCHAIN_PREFIX ]]/usr/local
+        VALI_ARCH: $[[ CHEF_TARGET_ARCHITECTURE ]]
+        VALI_SDK_PATH: $[[ INGREDIENTS_PREFIX ]]
     - name: build
       type: build
       depends: [config]
       system: make
       env:
-        VALI_SDK_PATH: ${{ INGREDIENTS_PREFIX }}
+        VALICC: $[[ TOOLCHAIN_PREFIX ]]/usr/local
+        VALI_SDK_PATH: $[[ INGREDIENTS_PREFIX ]]
 
 packs:
 - name: libpng
